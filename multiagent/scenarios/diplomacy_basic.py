@@ -66,6 +66,32 @@ class Scenario(BaseScenario):
             [0.65,0.15,0.15],
             [0.15,0.15,0.15]]
 
+  def setup_new_agent(self, agent, world):
+      agent.name = 'agent %d' %i
+      agent.collide = True
+      agent.silent = True
+      #agent.adversary = True
+      agent.size = 0.15
+      agent.original_size = 0.15
+      agent.n_landmarks = 0
+      agent.territory = set()
+      agent.collisions = set()
+      agent.size_zero_flag = False
+
+      #size, accel, max_speed = defaults
+      world.teams.add_agent_to_new_team(agent)
+
+  def setup_landmarks(self, world):
+    world.landmarks = [Landmark() for i in range(num_landmarks)]
+    for i, landmark in enumerate(world.landmarks):
+      landmark.name = 'landmark %d' %i
+      landmark.collide = True
+      landmark.movable = False
+      landmark.original_size = landmark.size
+      #landmark.size = 0
+      landmark.boundary = False
+    world.territories = Territories(world.landmarks)
+
   def make_world(self):
 
     world = World()
@@ -84,33 +110,15 @@ class Scenario(BaseScenario):
     #add the agents
     world.agents = [Agent() for i in range(num_agents)]
     for i, agent in enumerate(world.agents):
-      agent.name = 'agent %d' %i
-      agent.collide = True
-      agent.silent = True
-      #agent.adversary = True
-      agent.size = 0.15
-      agent.original_size = 0.15
-      agent.n_landmarks = 0
-      agent.territory = set()
-      agent.collisions = set()
-      agent.size_zero_flag = False
-
-      #size, accel, max_speed = defaults
-      world.teams.add_agent_to_new_team(agent)
+        self.setup_new_agent(i,agent, world)
 
 
     #add the landmarks
-    world.landmarks = [Landmark() for i in range(num_landmarks)]
-    for i, landmark in enumerate(world.landmarks):
-      landmark.name = 'landmark %d' %i
-      landmark.collide = True
-      landmark.movable = False
-      landmark.original_size = landmark.size
-      #landmark.size = 0
-      landmark.boundary = False
-    world.territories = Territories(world.landmarks)
+    self.setup_landmarks(world)
+
     #make intial conditions
     self.reset_world(world)
+    
     return world
 
   def reset_world(self, world):
